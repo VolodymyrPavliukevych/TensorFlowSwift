@@ -104,7 +104,7 @@ public struct Autoencoder {
     var w2 = Tensor<Float>(randomUniform: [50, 2])
     var w3 = Tensor<Float>(randomUniform: [2, 50])
     var w4 = Tensor<Float>(randomUniform: [50, Autoencoder.imageSize])
-    var learningRate: Float = 0.001
+    var learningRate: Float = 0.00001
 }
 
 public extension Autoencoder {
