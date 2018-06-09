@@ -1,5 +1,15 @@
 # Simple Autoencoder
 
+<p align="center">
+<img src="images/autoencoder-5.png">
+<p>Autoencoder claserization</p>
+</p>
+
+<p align="center">
+<img src="images/input-0.png" height="220" width="220">
+<img src="images/output-5.png" height="220" width="220">
+</p>
+
 This directory builds a simple autoencoder model.
 
 **Note:** This model is a work in progress and training doesn't quite work.
