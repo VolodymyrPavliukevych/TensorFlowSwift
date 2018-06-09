@@ -2,12 +2,12 @@
 
 <p align="center">
 <img src="images/autoencoder-5.png">
-<p>Autoencoder claserization</p>
+<p>Autoencoder clasterization</p>
 </p>
 
 <p align="center">
-<img src="images/input-0.png" height="220" width="220">
-<img src="images/output-5.png" height="220" width="220">
+<img src="images/input-0.png" height="270" width="360">
+<img src="images/output-5.png" height="270" width="360">
 </p>
 
 This directory builds a simple autoencoder model.

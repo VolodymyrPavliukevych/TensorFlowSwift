@@ -67,8 +67,7 @@ func plot(tensor: [Float], labels: Tensor<Int32>, step: Int) {
         let y = tensor.enumerated().filter { yElementIndex.contains($0.offset) }.map { $0.element }
         ax.scatter(x: x, y: y, color: mappedColors[element], label: "\(element)", s: 20, alpha: 0.8)
     }
-    ax.set_xlabel("classes")
-    ax.set_ylabel("y label")
+    ax.set_xlabel("Autoencoder clasterization.")
     ax.legend()
     //plt.axis.dynamicallyCall(withArguments:[-0.3, 0.3, -0.3, 0.3])
     if !FileManager.default.fileExists(atPath: outputFolder) {
