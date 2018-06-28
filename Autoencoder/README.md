@@ -2,7 +2,6 @@
 
 <p align="center">
 <img src="images/autoencoder-5.png">
-<p>Autoencoder clasterization</p>
 </p>
 
 <p align="center">
