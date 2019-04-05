@@ -7,7 +7,6 @@ let dictionaryLength = 70
 func pullSequence() -> (x: Tensor<Float>, y: Tensor<Int32>) {
     let input = UUID().uuidString.prefix(sequenceLength)
     let output = String(input.sorted())
-    print(input, output)
     let x = input.utf8.map { Int32($0) }
     let y = output.utf8.map { Int32($0) }
     
@@ -27,9 +26,9 @@ struct LSTMCell: Layer {
     typealias Input = LSTMType
     typealias Output = LSTMType
 
-    static let inputSize = 16
-    static let hiddenUnitSize = 16
-    static let outputSize = 16
+    static let inputSize = 100
+    static let hiddenUnitSize = 100
+    static let outputSize = 100
 
     var inputWGate = Dense<Float>(inputSize: inputSize, outputSize: hiddenUnitSize, activation: sigmoid)
     var inputIGate = Dense<Float>(inputSize: inputSize, outputSize: hiddenUnitSize, activation: sigmoid)
@@ -47,7 +46,7 @@ struct LSTMCell: Layer {
 
     @differentiable
     func applied(to input: LSTMType , in context: Context) -> LSTMType {
-
+        
         let iOfT = inputWGate.applied(to: input.inOrOutSignal, in: context) + inputIGate.applied(to: input.hiddenState, in: context)
         let fOfT = forgetWGate.applied(to: input.inOrOutSignal, in: context) + forgetIGate.applied(to: input.hiddenState, in: context)
         let cOfT = candidateWLayer.applied(to: input.inOrOutSignal, in: context) + candidateILayer.applied(to: input.hiddenState, in: context)
@@ -65,7 +64,7 @@ struct LSTMCell: Layer {
 var cell = LSTMCell()
 let context = Context(learningPhase: .training)
 let optimizer = RMSProp<LSTMCell, Float>()
-let epochCount = 100
+let epochCount = 1
 
 var conveyor = Tensor<Float>(zeros: TensorShape([Int32(LSTMCell.inputSize), Int32(LSTMCell.hiddenUnitSize)]))
 var hiddenState = Tensor<Float>(zeros: TensorShape([Int32(LSTMCell.inputSize), Int32(LSTMCell.hiddenUnitSize)]))
@@ -81,35 +80,37 @@ for epoch in 0..<epochCount {
     var totalLoss: Float = 0
     
     let (x, y) = pullSequence()
-    for charIndex in 0..<Int32(sequenceLength) {
-        let input = x[charIndex]
+    for charIndex in 0..<Int32(1) {
+        let input = x[charIndex].reshaped(to: TensorShape([1, 100]))
         let output = y[charIndex]
-        
         let 𝛁model = cell.gradient { cell -> Tensor<Float> in
-
+//
             let cellInput = LSTMType(inOrOutSignal: input, conveyor: conveyor, hiddenState: hiddenState)
             let ŷ = cell.applied(to: cellInput, in: context)
-            let correctPredictions = ŷ.inOrOutSignal.argmax(squeezingAxis: 1) .== y
-            correctGuessCount += Int(Tensor<Int32>(correctPredictions).sum().scalarized())
-            totalGuessCount += 1 // batchSize
-            
-            let loss = softmaxCrossEntropy(logits: ŷ.inOrOutSignal, labels: y)
-            totalLoss += loss.scalarized()
-            
-//            conveyor = ŷ.conveyor
-//            hiddenState = ŷ.hiddenState
-            
-            return loss
+            print("ŷ: \(ŷ.inOrOutSignal.shape)")
+//            let correctPredictions = ŷ.inOrOutSignal.argmax(squeezingAxis: 1) .== y
+//            correctGuessCount += Int(Tensor<Int32>(correctPredictions).sum().scalarized())
+//            totalGuessCount += 1 // batchSize
+//
+//            let loss = softmaxCrossEntropy(logits: ŷ.inOrOutSignal, labels: y)
+//            totalLoss += loss.scalarized()
+//
+////            conveyor = ŷ.conveyor
+////            hiddenState = ŷ.hiddenState
+//
+//            return loss
+            return Tensor<Float>(0.0)
         }
+
         // Update the model's differentiable variables along the gradient vector.
-        optimizer.update(&cell.allDifferentiableVariables, along: 𝛁model)
+//        optimizer.update(&cell.allDifferentiableVariables, along: 𝛁model)
     }
-        let accuracy = Float(correctGuessCount) / Float(totalGuessCount)
-        print("""
-            [Epoch \(epoch)] \
-            Loss: \(totalLoss), \
-            Accuracy: \(correctGuessCount)/\(totalGuessCount) (\(accuracy))
-            """)
+//        let accuracy = Float(correctGuessCount) / Float(totalGuessCount)
+//        print("""
+//            [Epoch \(epoch)] \
+//            Loss: \(totalLoss), \
+//            Accuracy: \(correctGuessCount)/\(totalGuessCount) (\(accuracy))
+//            """)
 }
 
 
